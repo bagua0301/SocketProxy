@@ -1,0 +1,64 @@
+// SocketProxy 客户端配置（整合示例：普通 / 插件 / 认证 / 订阅）
+// 运行: go run ./cmd/sp-client -config configs/client.plugin.example.json
+// 选择节点: 追加 -node <名称>
+{
+  // 本地 SOCKS5 监听地址
+  "listen": "127.0.0.1:1080",
+
+  // 连接模式（两种主要用法）:
+  //   auto   先尝试正常直连目标，失败再走代理（默认；失败目标 10 分钟内直接走代理）
+  //   proxy  所有连接都走代理
+  //   direct 仅直连，不走代理（UDP 关闭）
+  "mode": "proxy",
+
+  // 直连超时（秒），仅 auto / direct 使用
+  "directTimeout": 5,
+
+  // 启动成功后自动设置 Windows 系统代理为本地 HTTP 代理（Chrome/Edge 直接生效，远程 DNS），
+  // 进程退出（Ctrl+C）时恢复原设置。如需关闭自动设置，改为 true。
+  "disableSystemProxy": false,
+
+  // 节点选择策略:
+  //   manual   优先使用指定节点，不可用时自动切换到其他节点
+  //   latency  按测速结果选择延迟最低的节点
+  //   failover 当前节点失败后切换，并记住新的可用节点
+  "strategy": "manual",
+
+  // 首选节点名，可被命令行 -node 覆盖
+  "node": "hk-plugin",
+
+  // SOCKS5 用户名/密码认证（RFC 1929，可选）。启用后客户端必须带认证：
+  //   curl.exe --socks5 user:pass@127.0.0.1:1080 http://example.com
+  // 不使用认证时保持注释。
+  // "auth": { "username": "user", "password": "pass" },
+
+  // 健康检查/测速（秒）
+  "healthCheck": { "interval": 30, "timeout": 3 },
+
+  // SIP002 订阅（可选）：填写 url 后自动加载 ss:// 节点；updateInterval 为刷新间隔（秒）
+  "subscription": { "url": "", "updateInterval": 3600 },
+
+  // 节点列表，可配置多个用于多节点 / 故障转移
+  "nodes": [
+    {
+      "name": "hk-plugin",
+      "server": "127.0.0.1",
+      "port": 8443,
+      "password": "change-me",
+      "method": "aes-256-gcm",
+
+      // 是否参与 UDP 中继；插件模式下通常为 false
+      "udp": false,
+
+      // 连接超时（秒）
+      "timeout": 10,
+
+      // SIP003 插件（如 v2ray-plugin）。
+      // 直连 SS（不用插件）时删除 plugin / pluginOpts / pluginArgs 三行。
+      // TLS 示例: "pluginOpts": "tls;host=example.com"
+      "plugin": "v2ray-plugin",
+      "pluginOpts": "",
+      "pluginArgs": []
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+// SocketProxy 服务端配置（整合示例：普通 / 插件 / UDP）
+// 运行: go run ./cmd/sp-server -config configs/server.plugin.example.json
+{
+  // 监听地址：插件模式下是插件的公网监听地址；直连模式下是 SS 服务监听地址
+  "listen": "0.0.0.0:8443",
+
+  // UDP 监听地址（仅直连模式使用；留空则默认与 listen 相同）
+  "udpListen": "0.0.0.0:8443",
+
+  // 关闭 UDP：插件模式建议 true；直连模式需要 UDP 时设为 false
+  "disableUDP": true,
+
+  // 加密方法与密码，需与客户端一致
+  "method": "aes-256-gcm",
+  "password": "change-me",
+
+  // 连接超时（秒）
+  "timeout": 120,
+
+  // SIP003 插件（如 v2ray-plugin）。
+  // 直连 SS（不用插件）时删除 plugin / pluginOpts / pluginArgs 三行。
+  // 插件模式下内部 SS 会自动监听 127.0.0.1:<随机端口>。
+  // 需要命令行参数区分的插件可用 pluginArgs，如 ["-server"]。
+  "plugin": "v2ray-plugin",
+  "pluginOpts": "server",
+  "pluginArgs": []
+}
